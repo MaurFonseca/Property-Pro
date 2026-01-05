@@ -4,10 +4,33 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Promises (Playground).xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>Property Pro.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>9FFA12982F03F3A90089F475</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9FFA12A52F03F3AB0089F475</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9FFA12AF2F03F3AB0089F475</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
