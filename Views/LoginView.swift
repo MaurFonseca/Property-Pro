@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     @ObservedObject var coordinator: AuthCoordinator
+    @EnvironmentObject var userSession: UserSession
     @StateObject private var viewModel = UsuarioViewModel()
     @State private var email = ""
     @State private var password = ""
@@ -56,16 +57,26 @@ struct LoginView: View {
                         .background(Color(.systemGray6))
                         .cornerRadius(10)
                     
-                    Button{
-                        Task{
-                            await viewModel.login(email: email, password: password)
+                    Button {
+                        Task {
+                            do {
+                                try await viewModel.login(email: email, password: password)
+                                if let user = viewModel.loggedUser{
+                                    userSession.userId = user.id
+                                    userSession.userName = user.nome
+                                    userSession.email = user.email
+                                }
+                            } catch {
+                                print("❌ Erro no login:", error.localizedDescription)
+                            }
                         }
-                    }label:{
+                    } label: {
                         Text("Entrar")
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding()
                     }
+
                     .buttonStyle(.borderedProminent)
                     .tint(.blue)
                     

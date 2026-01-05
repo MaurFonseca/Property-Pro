@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import FirebaseAuth
+import FirebaseFirestore
 
 @MainActor
 final class UsuarioViewModel: ObservableObject {
@@ -9,55 +10,42 @@ final class UsuarioViewModel: ObservableObject {
     @Published var usuario: Usuario?
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var loggedUser: Usuario?
     
     private let authService = AuthService()
     private let usuarioRepository = UsuarioRepository()
     
     func register(email: String, password: String, name: String) async {
-        print("🟡 ViewModel.register iniciado")
         isLoading = true
         errorMessage = nil
         
         do {
-            print("🔐 Chamando AuthService.register")
             try await authService.register(
                 email: email,
                 password: password,
                 nome: name
             )
-            
-            authUser = authService.currentUser()
-            print("👤 Auth user:", authUser?.uid ?? "nil")
-            usuario = try await fetchCurrentUser()
-            print("📦 Usuario carregado do Firestore:", usuario ?? "nil")
+            try Auth.auth().signOut()
             
         } catch {
-            print("🔥 ERRO AO REGISTRAR:", error)
             errorMessage = error.localizedDescription
         }
         
         isLoading = false
-        print("✅ ViewModel.register finalizado")
     }
     
-    func login(email: String, password: String) async {
-        isLoading = true
-        errorMessage = nil
-        
-        do {
-            authUser = try await authService.singIn(
-                email: email,
-                password: password
-            )
-            
-            usuario = try await fetchCurrentUser()
-            
-        } catch {
-            errorMessage = error.localizedDescription
+    func login(email: String, password: String) async throws {
+            // Auth Firebase (exemplo)
+            let result = try await Auth.auth().signIn(withEmail: email, password: password)
+
+            // Buscar dados do usuário no Firestore
+            let snapshot = try await Firestore.firestore()
+                .collection("usuarios")
+                .document(result.user.uid)
+                .getDocument()
+
+            self.loggedUser = try snapshot.data(as: Usuario.self)
         }
-        
-        isLoading = false
-    }
     
     func logout() {
         do {

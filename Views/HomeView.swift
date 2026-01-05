@@ -6,13 +6,17 @@
 //
 
 import SwiftUI
+import FirebaseAuth
+
 
 struct HomeView: View {
     
     // MARK: - Coordinator
-    //@ObservedObject var coordinator: AppCoordinator
+    // @ObservedObject var coordinator: AppCoordinator
     // Exemplo futuro:
     // @ObservedObject var coordinator: HomeCoordinator
+    
+    @EnvironmentObject var userSession: UserSession
     
     var body: some View {
         ZStack {
@@ -27,35 +31,61 @@ struct HomeView: View {
             VStack(spacing: 28) {
                 
                 // Header
-                VStack(spacing: 8) {
-                    Image(systemName: "house.and.flag.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 60, height: 60)
-                        .foregroundColor(.white)
-                    
-                    Text("Property Pro")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                    
-                    Text("Painel de Controle")
-                        .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.9))
+                HStack {
+                    VStack(spacing: 8) {
+                        Image(systemName: "house.and.flag.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 60, height: 60)
+                            .foregroundColor(.white)
+                        
+                        Text("Olá \(userSession.userName)👋")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+
+                        Text("Property Pro")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+
+                        Text("Painel de Controle")
+                            .font(.subheadline)
+                            .foregroundColor(.white.opacity(0.9))
+                    }
+
+                    Spacer()
+
+                    Button {
+                        do {
+                            try Auth.auth().signOut()
+                        } catch {
+                            print("❌ Erro ao fazer logout:", error.localizedDescription)
+                        }
+                    } label: {
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                        Text("Sair")
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                    }
                 }
+                .padding(.horizontal)
+
                 
                 // Card principal
                 VStack(spacing: 16) {
                     
                     HomeButton(
-                        title: "Cadastrar novo Operador",
+                        title: "Operadores",
                         icon: "person.badge.plus"
                     ) {
                         // coordinator.showCreateOperator()
                     }
                     
                     HomeButton(
-                        title: "Cadastrar nova Casa",
+                        title: "Casas",
                         icon: "house.fill"
                     ) {
                         // coordinator.showCreateProperty()
@@ -128,5 +158,9 @@ struct HomeButton: View {
 
 
 #Preview {
-    HomeView()
+    let session = UserSession()
+    session.userName = "Maurício"
+    
+    return HomeView()
+        .environmentObject(session)
 }
